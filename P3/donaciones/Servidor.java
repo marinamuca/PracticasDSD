@@ -32,11 +32,14 @@ public class Servidor {
             Naming.rebind("Replica2", replica2);
 
             try {
-                replica1.setReplica(2, replica2);
-                replica2.setReplica(1, replica1);
+                replica1.setReplica(2);
+                replica2.setReplica(1);
             } catch (NotBoundException nb) {
                 System.out.println("Exception: " + nb.getMessage());
             }
+
+            //Le doy el token a la replica 1
+            replica1.setToken(true);
 
             System.out.println("Servidor RemoteException | MalformedURLExceptiondor preparado");
         } catch (RemoteException | MalformedURLException e) {

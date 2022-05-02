@@ -11,4 +11,7 @@ public interface I_Replica extends Remote {
     public I_Replica replicaRegistrado(String nombre) throws RemoteException;
     int getID() throws RemoteException;
     public ArrayList<String> getClientes() throws RemoteException;
+    boolean getToken() throws RemoteException;
+    void setToken(boolean token) throws RemoteException;
+    void recibirToken() throws RemoteException;
 }

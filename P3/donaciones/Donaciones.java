@@ -5,7 +5,10 @@ import java.rmi.registry.Registry;
 import java.rmi.server.*;
 import java.util.ArrayList;
 
+import java.util.*;
+
 import javax.net.ssl.HostnameVerifier;
+import javax.print.attribute.standard.QueuedJobCount;
 import javax.swing.text.html.HTMLDocument.RunElement;
 
 public class Donaciones extends UnicastRemoteObject implements I_Donaciones, I_Replica {
@@ -14,10 +17,13 @@ public class Donaciones extends UnicastRemoteObject implements I_Donaciones, I_R
     private final int ID;
     private Registry regReplica;
 
-    private int idOtraReplica;
     I_Replica otraReplica;
     ArrayList<String> clientes;
+    ArrayList<String> solicitando;
     private float totalLocal;
+
+    boolean token;
+    boolean ejecutando;
 
 
     public Donaciones(String host, int port, int idReplica) throws RemoteException {
@@ -27,12 +33,16 @@ public class Donaciones extends UnicastRemoteObject implements I_Donaciones, I_R
         this.regReplica = LocateRegistry.getRegistry(HOST, PORT);
 
         clientes = new ArrayList<>();
+        solicitando = new ArrayList<>();
         totalLocal = 0;
+
+        token = false;
+        ejecutando = false;
+
     }
 
-    public void setReplica (int id, I_Replica replica) throws AccessException, RemoteException, NotBoundException{
+    public void setReplica (int id) throws AccessException, RemoteException, NotBoundException{
         otraReplica= (I_Replica) regReplica.lookup("Replica" + id);
-        idOtraReplica = id;
     }
 
     public int getID() throws RemoteException{return ID;}
@@ -42,7 +52,13 @@ public class Donaciones extends UnicastRemoteObject implements I_Donaciones, I_R
     // INTERFAZ DONACIONES (Cliente-Servidor)
     @Override
     public int registrarCliente(String nombre) throws RemoteException {
+        System.out.println("-----------------------------------------------");
 
+        //Espera a tener el token
+        esperarToken();
+
+        //Inicio SC
+        ejecutando = true;
         if (replicaRegistrado(nombre) != null)
             throw new RemoteException("El Cliente ya está registrado");
 
@@ -54,13 +70,25 @@ public class Donaciones extends UnicastRemoteObject implements I_Donaciones, I_R
         System.out.println("Registro llamado desde REPLICA " + getID());
         System.out.println("REPLICA " + replicaRegistro.getID() + ": Se regista cliente " + nombre);
         System.out.println("REPLICA " + replicaRegistro.getID() + " Se han registrado " + replicaRegistro.getNumClientes() + " clientes");
+        //Fin SC
+        ejecutando = false;
+
+        // Da el token a la siguiente replica
+        darToken();
+
         
         return replicaRegistro.getID();
     }
 
     @Override
     public int depositarDonacion(String nombre, float valor) throws RemoteException {
-
+        System.out.println("-----------------------------------------------");
+        
+        //Espera a tener el token
+        esperarToken();
+        
+        //Inicio SC
+        ejecutando = true;
         I_Replica replica =  replicaRegistrado(nombre);
         if (replica == null)
             throw new RemoteException("Cliente no registrado");
@@ -70,6 +98,11 @@ public class Donaciones extends UnicastRemoteObject implements I_Donaciones, I_R
             System.out.println("REPLICA " + replica.getID() +  " Cliente " + nombre + " deposita " + valor + "€");
         } else
             throw new RemoteException("No se puede donar una cantidad negativa");
+        //Fin SC
+        ejecutando = false;
+
+        // Da el token a la siguiente replica
+        darToken();
 
         return replica.getID();
     }
@@ -77,18 +110,31 @@ public class Donaciones extends UnicastRemoteObject implements I_Donaciones, I_R
     @Override
     public float totalDonado(String nombre) throws RemoteException {
 
-        
-
+        System.out.println("-----------------------------------------------");
+      
+        //Espera a tener el token
+        esperarToken();
+        //Inicio SC
+        ejecutando = true;
         if (replicaRegistrado(nombre) == null)
             throw new RemoteException("Cliente no registrado");
 
         System.out.println("REPLICA " + getID() +  " Devuelvo total donado a cliente " + nombre);
+        // try {
+        //     Thread.sleep(5000);
+        // } catch (InterruptedException e) {
+        //     e.printStackTrace();
+        // }
+
+        //Fin SC
+        ejecutando = false;
+
+        // Da el token a la siguiente replica
+        darToken();
 
         return totalLocal + otraReplica.getDonado();
     }
-
    
-
     //INTERFAZ REPLICA (Servidor-Servidor)
     @Override
     public void registrar(String nombre) throws RemoteException{
@@ -96,7 +142,7 @@ public class Donaciones extends UnicastRemoteObject implements I_Donaciones, I_R
     }
 
     @Override
-    public void donar(float valor) throws RemoteException {
+    public synchronized void donar(float valor) throws RemoteException {
        totalLocal += valor;
     }
 
@@ -126,6 +172,39 @@ public class Donaciones extends UnicastRemoteObject implements I_Donaciones, I_R
         } 
 
         return replicaCliente;   
+    }
+
+    @Override
+    public boolean getToken() throws RemoteException{
+        return token;
+    }
+
+    @Override
+    public void setToken(boolean token) throws RemoteException{     
+        this.token = token;
+    }
+
+    @Override
+    public void recibirToken() throws RemoteException{
+        System.out.println("REPLICA " + otraReplica.getID() +  " pide el token.");
+        if(token && !ejecutando)
+            darToken();
+    }
+
+    public void darToken() throws RemoteException{
+
+        if(token){
+            System.out.println("REPLICA " + getID() +  " da el token.");
+            System.out.println("REPLICA " + otraReplica.getID() +  " Tiene el token.");
+
+            otraReplica.setToken(true);
+            this.setToken(false);
+        }
+    }
+
+    public void esperarToken() throws RemoteException{
+        while(!token)
+            otraReplica.recibirToken();
     }
    
 }
