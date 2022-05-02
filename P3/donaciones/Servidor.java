@@ -14,10 +14,11 @@ public class Servidor {
 
         String host = "127.0.0.1";
         int port = Integer.parseInt(args[0]);
+        int nReplicas = Integer.parseInt(args[1]);
 
         //Creo las replicas
-        Donaciones replica1 = new Donaciones(host, port, 1);
-        Donaciones replica2 = new Donaciones(host, port, 2);
+        ArrayList<Donaciones> replicas = new ArrayList<>();
+   
 
         // Crea e instala el gestor de seguridad
         if (System.getSecurityManager() == null) {
@@ -28,21 +29,36 @@ public class Servidor {
             // System.setProperty("java.rmi.server.hostname","192.168.1.107");
          
             Registry reg = LocateRegistry.createRegistry(port);
-            Naming.rebind("Replica1", replica1);
-            Naming.rebind("Replica2", replica2);
 
-            try {
-                replica1.setReplica(2);
-                replica2.setReplica(1);
-            } catch (NotBoundException nb) {
-                System.out.println("Exception: " + nb.getMessage());
+            for (int i = 0; i < nReplicas ; i++) {
+                Donaciones replica = new Donaciones(host, port, i+1);
+              
+                int id = i+1;
+                Naming.rebind("Replica" +  id, replica);
+
+                
+                
+                replicas.add(replica);   
             }
 
+            for (int i = 0; i < replicas.size(); i++) {
+                for (int j = 0; j < replicas.size(); j++) {
+                    int id = j+1;
+                    if( i!=j) {
+                        replicas.get(i).addReplica("Replica" + id);
+                    };             
+                }
+            }
+
+            for (Donaciones replica : replicas) {
+                replica.initAnillo();
+            }
+           
             //Le doy el token a la replica 1
-            replica1.setToken(true);
+            replicas.get(0).setToken(true);
 
             System.out.println("Servidor RemoteException | MalformedURLExceptiondor preparado");
-        } catch (RemoteException | MalformedURLException e) {
+        } catch (RemoteException | MalformedURLException | NotBoundException e) {
             System.out.println("Exception: " + e.getMessage());
         }
     }

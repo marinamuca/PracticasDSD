@@ -52,7 +52,7 @@ public class Cliente {
     public static void main(String[] args) throws Exception {
 
         if (args.length < 3) { //si hay más de 1 parámetro
-            throw new Exception("Numero incorrecto de parametros: [host] [port] [id_Replica] [nombre]");
+            throw new Exception("Numero incorrecto de parametros: [host] [port] [id_Replica]");
         } 
 
         String host = args[0];
