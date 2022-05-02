@@ -186,7 +186,7 @@ public class Donaciones extends UnicastRemoteObject implements I_Donaciones, I_R
 
     @Override
     public void recibirToken() throws RemoteException{
-        System.out.println("REPLICA " + otraReplica.getID() +  " pide el token.");
+        // System.out.println("REPLICA " + otraReplica.getID() +  " pide el token.");
         if(token && !ejecutando)
             darToken();
     }
@@ -203,6 +203,8 @@ public class Donaciones extends UnicastRemoteObject implements I_Donaciones, I_R
     }
 
     public void esperarToken() throws RemoteException{
+        System.out.println("REPLICA " + getID() +  " Esperando el token.");
+
         while(!token)
             otraReplica.recibirToken();
     }
