@@ -15,7 +15,7 @@ public class Donaciones extends UnicastRemoteObject implements I_Donaciones, I_R
     ArrayList<I_Replica> otrasReplicas;
     I_Replica siguiente, anterior;
     ArrayList<String> clientes;
-    ArrayList<Integer> donacionesCliente;
+    ArrayList<Float> donacionesCliente;
     private float totalLocal;
 
     boolean token;
@@ -102,7 +102,7 @@ public class Donaciones extends UnicastRemoteObject implements I_Donaciones, I_R
 
         //Inicio SC
         ejecutando = true;
-        replica.donar(valor);
+        replica.donar(nombre, valor);
         System.out.println("REPLICA " + replica.getID() +  " Cliente " + nombre + " deposita " + valor + "€");
         //Fin SC
         ejecutando = false;
@@ -130,14 +130,14 @@ public class Donaciones extends UnicastRemoteObject implements I_Donaciones, I_R
 
         //Inicio SC
         ejecutando = true;      
-        System.out.println("REPLICA " + getID() +  " Devuelvo total donado a cliente " + nombre);
+        System.out.println("REPLICA " + replicaCliente.getID() +  " Devuelvo total donado a cliente " + nombre);
         // try {
         //     Thread.sleep(5000);
         // } catch (InterruptedException e) {
         //     e.printStackTrace();
         // }
 
-        float total = totalLocal + totalOtrasReplicas();
+        float total = replicaCliente.calcularTotal();
         //Fin SC
         ejecutando = false;
 
@@ -147,23 +147,24 @@ public class Donaciones extends UnicastRemoteObject implements I_Donaciones, I_R
         return total;
     }
 
-    public float totalOtrasReplicas() throws RemoteException{
+    public float calcularTotal() throws RemoteException{
         float total = 0;
         for (I_Replica otraReplica : otrasReplicas) {
             total += otraReplica.getDonado();
         }
-        return total;
+        return total + totalLocal;
     }
    
     //INTERFAZ REPLICA (Servidor-Servidor)
     @Override
     public void registrar(String nombre) throws RemoteException{
        clientes.add(nombre);
-       donacionesCliente.add(0);
+       donacionesCliente.add(0f);
     }
 
     @Override
-    public synchronized void donar(float valor) throws RemoteException {
+    public synchronized void donar(String nombre, float valor) throws RemoteException {
+        donacionesCliente.set((clientes.indexOf(nombre)), valor);
        totalLocal += valor;
     }
 
@@ -184,6 +185,7 @@ public class Donaciones extends UnicastRemoteObject implements I_Donaciones, I_R
 
     @Override
     public boolean clienteHaDonado(String nombre) throws RemoteException{
+        System.out.println("CLIENTE " + donacionesCliente.size());
         return donacionesCliente.get(clientes.indexOf(nombre))>0;
     }
 

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public interface I_Replica extends Remote {
     void registrar(String nombre) throws RemoteException;
-    void donar(float valor) throws RemoteException;
+    void donar(String nombre, float valor) throws RemoteException;
     float getDonado() throws RemoteException;
     int getNumClientes() throws RemoteException;
     public boolean clienteRegistrado(String nombre) throws RemoteException;
@@ -16,4 +16,5 @@ public interface I_Replica extends Remote {
     void setToken(boolean token) throws RemoteException;
     void recibirToken() throws RemoteException;
     public void setAnteriorReplica(I_Replica anterior) throws RemoteException;
+    public float calcularTotal() throws RemoteException;
 }
