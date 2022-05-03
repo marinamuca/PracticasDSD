@@ -79,7 +79,11 @@ public class Cliente {
                 System.out.println("-----------------------------------");
 
                 menu();
-                opcion = getOpcion();
+                try {
+                    opcion = getOpcion();        
+                } catch ( ArrayIndexOutOfBoundsException | NullPointerException e) {         
+                    opcion = Opciones.ERROR;
+                }
 
                 switch (opcion) {
                     case  REGISTRO:
@@ -108,6 +112,9 @@ public class Cliente {
                         break;
 
                     case SALIR:
+                        break;
+                    case ERROR:
+                        System.out.println("Seleccione una opcion correcta");
                         break;
 
                     

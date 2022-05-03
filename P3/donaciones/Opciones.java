@@ -1,3 +1,3 @@
 public enum Opciones {
-    REGISTRO, DONAR, TOTAL, SALIR
+    REGISTRO, DONAR, TOTAL, SALIR, ERROR
 }
