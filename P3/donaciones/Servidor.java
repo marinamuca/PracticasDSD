@@ -12,9 +12,9 @@ public class Servidor {
 
     public static void main(String[] args) throws RemoteException {
 
-        String host = "127.0.0.1";
-        int port = Integer.parseInt(args[0]);
-        int nReplicas = Integer.parseInt(args[1]);
+        String host = args[0];
+        int port = Integer.parseInt(args[1]);
+        int nReplicas = Integer.parseInt(args[2]);
 
         //Creo las replicas
         ArrayList<Donaciones> replicas = new ArrayList<>();
@@ -34,10 +34,7 @@ public class Servidor {
                 Donaciones replica = new Donaciones(host, port, i+1);
               
                 int id = i+1;
-                Naming.rebind("Replica" +  id, replica);
-
-                
-                
+                Naming.rebind("Replica" +  id, replica);          
                 replicas.add(replica);   
             }
 

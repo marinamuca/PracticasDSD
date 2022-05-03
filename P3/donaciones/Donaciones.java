@@ -13,12 +13,15 @@ public class Donaciones extends UnicastRemoteObject implements I_Donaciones, I_R
     private Registry regReplica;
 
     ArrayList<I_Replica> otrasReplicas;
-    I_Replica siguiente, anterior;
     ArrayList<String> clientes;
     ArrayList<Float> donacionesCliente;
     private float totalLocal;
-
+    
+    // Replicas anterior y siguiente para EM
+    I_Replica siguiente, anterior; 
+    // Indica si tiene o no el Token
     boolean token;
+    //Indica si esta o no ejecutando una sección critica
     boolean ejecutando;
 
 
@@ -42,16 +45,49 @@ public class Donaciones extends UnicastRemoteObject implements I_Donaciones, I_R
         otrasReplicas.add(replica); 
     }
 
-    public int getID() throws RemoteException{return ID;}
-    public ArrayList<String> getClientes() throws RemoteException{return clientes;}
+    public I_Replica replicaRegistrado(String nombre) throws RemoteException{
+        I_Replica replicaCliente = null;
 
+        if(clienteRegistrado(nombre))
+            replicaCliente =  (I_Replica)this;
+        else 
+        for (I_Replica otraReplica : otrasReplicas) {
+            if(otraReplica.clienteRegistrado(nombre)){
+                replicaCliente =  otraReplica;
+            }
+        }         
+        return replicaCliente;   
+    }
+
+  
     public void initAnillo() throws RemoteException{
         if(siguiente == null){
             siguiente = otrasReplicas.get((ID+1) % (otrasReplicas.size()));
-    
             siguiente.setAnteriorReplica((I_Replica) this);
         } 
     }
+
+    public synchronized void darToken() throws RemoteException{
+        
+        if(token){
+            System.out.println("REPLICA " + getID() +  " da el token.");
+            System.out.println("REPLICA " + siguiente.getID() +  " Tiene el token.");
+
+            siguiente.setToken(true);
+            this.setToken(false);
+        }
+    }
+
+    public synchronized void esperarToken() throws RemoteException{
+        if(!token)
+            System.out.println("REPLICA " + getID() +  " Esperando el token.");
+       
+        while(!token)
+            anterior.recibirToken();
+    }
+
+
+    
 
    
     // INTERFAZ DONACIONES (Cliente-Servidor)
@@ -130,14 +166,14 @@ public class Donaciones extends UnicastRemoteObject implements I_Donaciones, I_R
 
         //Inicio SC
         ejecutando = true;      
-        System.out.println("REPLICA " + replicaCliente.getID() +  " Devuelvo total donado a cliente " + nombre);
-        // try {
-        //     Thread.sleep(5000);
-        // } catch (InterruptedException e) {
-        //     e.printStackTrace();
-        // }
-
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        
         float total = replicaCliente.calcularTotal();
+        System.out.println("REPLICA " + replicaCliente.getID() +  " Devuelvo total donado a cliente " + nombre);
         //Fin SC
         ejecutando = false;
 
@@ -147,30 +183,34 @@ public class Donaciones extends UnicastRemoteObject implements I_Donaciones, I_R
         return total;
     }
 
-    public float calcularTotal() throws RemoteException{
-        float total = 0;
-        for (I_Replica otraReplica : otrasReplicas) {
-            total += otraReplica.getDonado();
-        }
-        return total + totalLocal;
-    }
+  
    
     //INTERFAZ REPLICA (Servidor-Servidor)
     @Override
-    public void registrar(String nombre) throws RemoteException{
+    public synchronized void registrar(String nombre) throws RemoteException{
        clientes.add(nombre);
        donacionesCliente.add(0f);
     }
 
     @Override
     public synchronized void donar(String nombre, float valor) throws RemoteException {
-        donacionesCliente.set((clientes.indexOf(nombre)), valor);
-       totalLocal += valor;
+        int indiceCliente = clientes.indexOf(nombre);
+        donacionesCliente.set((indiceCliente), donacionesCliente.get(indiceCliente)+valor);
+        totalLocal += valor;
     }
 
     @Override
     public float getDonado() throws RemoteException{
         return totalLocal;
+    }
+
+    @Override
+    public float calcularTotal() throws RemoteException{ 
+        float total = 0;
+        for (I_Replica otraReplica : otrasReplicas) {
+            total += otraReplica.getDonado();
+        }
+        return total + totalLocal;
     }
 
     @Override
@@ -185,28 +225,14 @@ public class Donaciones extends UnicastRemoteObject implements I_Donaciones, I_R
 
     @Override
     public boolean clienteHaDonado(String nombre) throws RemoteException{
-        System.out.println("CLIENTE " + donacionesCliente.size());
         return donacionesCliente.get(clientes.indexOf(nombre))>0;
     }
 
+    public int getID() throws RemoteException{return ID;}
+    public ArrayList<String> getClientes() throws RemoteException{return clientes;}
+  
     @Override
-    public I_Replica replicaRegistrado(String nombre) throws RemoteException{
-        I_Replica replicaCliente = null;
-
-        if(clienteRegistrado(nombre))
-            replicaCliente =  (I_Replica)this;
-        else 
-        for (I_Replica otraReplica : otrasReplicas) {
-            if(otraReplica.clienteRegistrado(nombre)){
-                replicaCliente =  otraReplica;
-            }
-        }         
-
-        return replicaCliente;   
-    }
-
-    @Override
-    public boolean getToken() throws RemoteException{
+    public boolean tieneToken() throws RemoteException{
         return token;
     }
 
@@ -217,31 +243,15 @@ public class Donaciones extends UnicastRemoteObject implements I_Donaciones, I_R
 
     @Override
     public void recibirToken() throws RemoteException{
-        System.out.println("REPLICA " + siguiente.getID() +  " pide el token.");
         if(token && !ejecutando)
-            darToken(); // Si tiene el token, se lo da
-        else
-            esperarToken(); // Si no tiene el toke, lo pide para darselo a la replica que se lo ha pedido
+            darToken(); // Si tiene el token y no esta ejecutando, se lo da
+        else if(token == false)
+            esperarToken(); 
+        // Si no tiene el token, lo pide para darselo a la replica que se lo ha pedido
+        // Si está ejecutando no hace nada.
     }
 
-    public void darToken() throws RemoteException{
-        
-        if(token){
-            System.out.println("REPLICA " + getID() +  " da el token.");
-            System.out.println("REPLICA " + siguiente.getID() +  " Tiene el token.");
-
-            siguiente.setToken(true);
-            this.setToken(false);
-        }
-    }
-
-    public void esperarToken() throws RemoteException{
-        System.out.println("REPLICA " + getID() +  " Esperando el token.");
-       
-        while(!token)
-            anterior.recibirToken();
-    }
-
+    @Override
     public void setAnteriorReplica(I_Replica anterior) throws RemoteException{     
         this.anterior = anterior;
     }
