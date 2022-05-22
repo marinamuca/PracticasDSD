@@ -1,8 +1,8 @@
 const HttpServer = require("./httpServer.js");
-const DBServer = require("./dbServer.js");
+const mongoDBServer = require("./mongodbServer.js");
 
 var httpServer = new HttpServer();
-var dbServer = new DBServer("mongodb://localhost:27017/","DSDP4");
+var mongoDBServer = new DBServer("mongodb://localhost:27017/","DSDP4");
 
 httpServer.launch();
-dbServer.launch();
+mongoDBServer.launch();
