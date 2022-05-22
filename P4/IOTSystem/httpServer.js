@@ -16,6 +16,7 @@ class HttpServer{
         );
     }
 
+    //Mediante fs lee el html correspondiente a la peticion del cliente.
     readPage(response, fname){
         
         fs.readFile(fname, function (err, data) {
@@ -34,9 +35,10 @@ class HttpServer{
         });
     }
 
+    //A partir de la url pasada, calcula la ruta de la pagina solicitada por el cliente
     page(url){
         var ruta = ""
-
+        console.log(url);
         switch (url) {
             case '/home':
             case '/':
@@ -58,7 +60,8 @@ class HttpServer{
         return ruta;
     }
 
-    start() {
+    /// Lanza el servidor Http
+    launch() {
         this.server.listen(this.port);
 
         //Compruebo si el servidor se inicia o no.

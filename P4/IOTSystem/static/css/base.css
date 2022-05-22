@@ -1,14 +1,16 @@
+@import url("sensores.css");
+@import url("log.css");
 /* Estilos de los elementos comunes a todas las paginas */
 
 :root{
-    --lighter-pink: #faebf3;
-    --light-pink: #f6d7e7;
-    --light-pink-shadow: #f6d7e7a2;
-    --main-pink: #e7788b;
-    --dark-pink: #a75966;
-    --darker-pink: #612c46;
-    --shadow: #8a305b56;
-    --dark-shadow: #7c3e5ba1;
+    --lighter: #ecebfa;
+    --light: #ded7f6;
+    --light-shadow: #dbd7f6a2;
+    --main: #8e78e7;
+    --dark: #6059a7;
+    --darker: #372c61;
+    --shadow: #3f308a56;
+    --dark-shadow: #453e7ca1;
 }
 
 @font-face {
@@ -22,7 +24,7 @@
 * {
     box-sizing: border-box;
     font-family: brandon-grot-w01-light, Oswald, sans-serif;
-    color: var(--main-pink);
+    color: var(--main);
 } 
 
 .content{
@@ -79,8 +81,8 @@ header{
     nav.navbar{
         width: 100%;
         max-width: 100%;
-        height: 50%;
-        max-height: 50%;
+        /* height: 50%;
+        max-height: 50%; */
     }
 
     .navbar ul{
@@ -92,117 +94,37 @@ header{
         height: 100%;
         max-height: 100%;
         overflow: hidden;
-        background-color: var(--light-pink);
+        background-color: var(--light);
     }
 
     .navbar li a{
         display: block;
-        color: var(--main-pink);
+        color: var(--main);
         text-align: center;
         padding: 15px 16px;
         text-decoration: none;
+        font-size:larger;
     }
 
     .navbar li a:hover {
-        color: var(--light-pink);
-        background-color: var(--main-pink);
+        color: var(--light);
+        background-color: var(--main);
     }
 /* END HEADER AND ITS CONTENT */
 
 /* MAIN CONTENT  */
 
 .main-container{
-    background-color: #612c46;
+    border-top: 0;
     padding-top: 15px;
-    padding-bottom: 10px;
     display: flex;
+    justify-content: space-between;
     margin: 0 auto;
-    width: 70%;
-    height: 100%;
-    max-height: 100%;
+    width: 60%;
+    height: auto;
+    max-height: calc(100% - 52.5px);
     overflow: auto;
     flex-wrap: wrap; /* Para que se pongan las fotos de los productos unas debajo de otras */
 }
     
 /* END MAIN CONT  */
-
-footer{
-    width: 100%;
-    height: 55px;
-    margin:0;
-    display: flex;
-    align-items: center;
-    justify-content: center;   
-    background-color: var(--light-pink);
-    position: relative;
-    bottom: 0;
-    z-index: 1;
-    border-top: 10px solid white;
-}
-
-/* RESPONSIVE LAYOUT */
-
-/* Filas de 2 */
-@media only screen and (max-width: 700px) {
-    .rrss a{
-        display: flex;
-        justify-content: center;
-    }
-
-    .rrss a img{
-        min-width: 50%;
-        display: block;
-        align-self: center;
-    }
-
-    .rrss a span{
-        display: none;
-    }
-}
-
-
-/* Filas de 1 */
-@media only screen and (max-width: 500px) {
-    .main-container{
-        min-width: 100%;
-        max-width: 100%;
-        padding-top: 10px;
-        padding-bottom: 10px;
-    }
-    
-    /* Oculto la Sidebar */
-    aside.sidebar{
-        display: none;
-    }
-
-    /* Hago mas pequeños los elementos del header*/
-    .title{
-        padding-left: 10px;
-    }
-
-    .title span{
-        font-size: 25px;
-    }
-
-    .logo{
-        height: 50px;
-        width: 50px;
-        min-width: 50px;
-        margin: 5px;
-    }
-
-    .navbar li a{
-        padding: 10px 11px;
-        font-size: 15px;
-    }
-
-    /* Hago mas pequeños los elementos del footer */
-
-    footer{
-        margin-top: 5px;
-    }
-
-    footer span{
-        font-size: 10px;
-    }
-}
