@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Sensores</title>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" type="text/css" href="static/css/base.css">
+    </head>
+    <header>
+        <nav class="navbar">
+            <ul>
+                <li>
+                    <a href="/">Home</a>
+                </li>
+                <li>
+                    <a href="/log">Historico</a>
+                </li>
+                <li>
+                    <a href="/sensores">Sensores</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    <body>
+        <div class="main-container">
+            <!--Lumiosidad-->
+            <div class="luz">
+                <h1>Luminosidad</h1>
+                <div class="content">
+                    <p>Valor Actual: </p>
+                    <span id="luz" class="valor">20%</span>
+                    <p>Actualizar valor: </p>
+                   <form action="javascript:void(0);" id="form-luz">
+                        <input type="text" id="luz-input" class="input-range">
+                        <span>%</span>
+                        <input type="submit" id="luz-btn" >
+                    </form>
+
+                </div>
+                <h3>Persianas</h3>
+                <div class="content">
+                    ACTUALIZAR
+                </div>
+            </div>
+
+            <!--Temperatura-->
+            <div class="temperatura">
+                <h1>Temperatura</h1>
+                <div class="content">
+                    <p>Valor Actual: </p>
+                    <span id="temperatura" class="valor">20ºC</span>
+                    <p>Actualizar valor: </p>
+
+                    <form action="javascript:void(0);" id="form-temperatura">
+                        <input type="text" id="temp-input">
+                        <span>ºC</span>
+                        <input type="submit" id="temp-btn" >
+                    </form>
+                </div>  
+                
+                <h3>Aire Acondicionado</h3>
+                <div class="content">
+                    ACTUALIZAR
+                </div>
+            </div>
+
+        </div>
+    </body>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="./static/js/updateSensores.js"></script>
+</html>
