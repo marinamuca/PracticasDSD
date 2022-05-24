@@ -20,10 +20,6 @@ class SocketIOServer {
                     name: data.name
                 })
             })
-
-            // socket.on('disconnect', () =>{
-
-            // })
         })
     }
 }

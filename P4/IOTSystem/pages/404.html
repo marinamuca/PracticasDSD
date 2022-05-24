@@ -1,9 +1,27 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Basic Web Page</title>
+        <title>Home</title>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" type="text/css" href="static/css/base.css">
     </head>
+    <header>
+        <nav class="navbar">
+            <ul>
+                <li>
+                    <a href="/log">Historico</a>
+                </li>
+                <li>
+                    <a href="/sensores">Sensores</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
     <body>
-        ERROR 404
+        <div class="main-container">
+            <h1>ERROR: No se ha encontrado lo que buscabas</h1>
+        </div>
     </body>
+    <script src="/socket.io/socket.io.js"></script>
+
 </html>

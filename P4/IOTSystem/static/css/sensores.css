@@ -1,5 +1,5 @@
 .temperatura, .luz{
-    width: 50%;
+    width: 100%;
     height: 50%;
 }
 
@@ -10,7 +10,22 @@
 .content{
     width: 100%;
     display: flex;
-    align-items: center;
+    justify-content: center;
+    align-content: center;
+}
+
+ul#alertas{
+  width: 100%;
+}
+
+.alerta{
+  width: 100%;
+  border-radius: 5px;
+  background-color: var(--light);
+  padding: 5px;
+  margin-bottom: 10px;
+  color: var(--dark-pink);
+  overflow-y: auto;
 }
 
 .valor{
@@ -33,11 +48,102 @@ input[type="text"] {
     width: 50px;
 
 }
-form .input-range:focus{
-    outline-color: var(--dark);
-    
+
+input[type="text"]:focus{
+    outline-color: var(--dark); 
 }
 
-form .input-range::-webkit-inner-spin-button {
-    -webkit-appearance: none;
+input[type="submit"]{
+    width: 100%;
+    align-self: center;
+    margin: auto;
+    cursor: pointer;
+    color: white;
+    border-radius: 5px;
+    box-shadow: 0 5px 5px 0 var(--dark-shadow);
+    border: none;
+    background-color: var(--dark);
+    font-size: 15px;
+        
 }
+
+input[type="submit"]:active{
+    box-shadow: 1px 1px 1px 0 var(--shadow);
+    transform: translateY(4px);
+}
+
+.actuador{
+    display: flex;
+    margin: 16px 0;
+}
+
+.actuador h2{
+    width: 50%;
+    margin: 0;
+}
+
+.actuador div{
+    margin: auto;
+    margin-right: 0;
+}
+
+/* SWITCH */
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 23px;
+  }
+  
+  .switch input { 
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+  
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 17px;
+    width: 17px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+  
+  input:checked + .slider {
+    background-color: var(--dark);
+  }
+  
+  input:focus + .slider {
+    box-shadow: 0 0 1px  var(--dark);
+  }
+  
+  input:checked + .slider:before {
+    -webkit-transform: translateX(17px);
+    -ms-transform: translateX(17px);
+    transform: translateX(17px);
+  }
+  
+  /* Rounded sliders */
+  .slider.round {
+    border-radius: 23px;
+  }
+  
+  .slider.round:before {
+    border-radius: 50%;
+  }

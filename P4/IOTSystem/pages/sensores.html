@@ -8,9 +8,9 @@
     <header>
         <nav class="navbar">
             <ul>
-                <li>
+                <!-- <li>
                     <a href="/">Home</a>
-                </li>
+                </li> -->
                 <li>
                     <a href="/log">Historico</a>
                 </li>
@@ -27,18 +27,23 @@
                 <h1>Luminosidad</h1>
                 <div class="content">
                     <p>Valor Actual: </p>
-                    <span id="luz" class="valor">20%</span>
+                    <span id="luz" class="valor">--%</span>
                     <p>Actualizar valor: </p>
                    <form action="javascript:void(0);" id="form-luz">
-                        <input type="text" id="luz-input" class="input-range">
+                        <input type="text" id="luz-input">
                         <span>%</span>
-                        <input type="submit" id="luz-btn" >
                     </form>
-
+                    
                 </div>
-                <h3>Persianas</h3>
-                <div class="content">
-                    ACTUALIZAR
+                <input type="submit" id="luz-btn" >
+                <div class="actuador">
+                    <h2>Persiana</h2>
+                    <div>
+                        <label class="switch">
+                            <input id="persiana" type="checkbox">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
                 </div>
             </div>
 
@@ -47,22 +52,29 @@
                 <h1>Temperatura</h1>
                 <div class="content">
                     <p>Valor Actual: </p>
-                    <span id="temperatura" class="valor">20ºC</span>
+                    <span id="temperatura" class="valor">--ºC</span>
                     <p>Actualizar valor: </p>
 
-                    <form action="javascript:void(0);" id="form-temperatura">
+                    <form action="javascript:void(0);" id="form-temperatura">      
                         <input type="text" id="temp-input">
-                        <span>ºC</span>
-                        <input type="submit" id="temp-btn" >
+                        <span>ºC</span>    
                     </form>
                 </div>  
+                <input type="submit" id="temp-btn" >
                 
-                <h3>Aire Acondicionado</h3>
-                <div class="content">
-                    ACTUALIZAR
+                <div class="actuador">
+                    <h2>Aire Acondicionado</h2>
+                    <div>
+                        <label class="switch">
+                            <input id="ac" type="checkbox">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
                 </div>
             </div>
-
+            <ul id="alertas">
+                
+            </ul>
         </div>
     </body>
     <script src="/socket.io/socket.io.js"></script>
